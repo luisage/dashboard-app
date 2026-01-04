@@ -1,65 +1,121 @@
-import Image from "next/image";
+/*import { prisma } from '@/lib/prisma';
 
-export default function Home() {
+export default async function Home() {
+  // 1. Consultamos los usuarios directamente desde PostgreSQL
+  const usuarios = await prisma.user.findMany();
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main style={{ padding: '40px', fontFamily: 'sans-serif' }}>
+      <h1 className="text-3xl font-bold text-blue-600">Dashboard de Usuarios</h1>
+      
+      {usuarios.length === 0 ? (
+        <p>No hay usuarios en la base de datos.</p>
+      ) : (
+        <ul>
+          {usuarios.map((user) => (
+            <li key={user.id}>{user.name} - {user.email}  - {user.role}</li>
+          ))}
+        </ul>
+      )}
+    </main>
+  );
+}*/
+
+import { prisma } from '@/lib/prisma';
+import { addUser } from './actions';
+import DeleteButton from './components/DeleteButton';
+import Search from './components/Search';
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ query?: string }>
+}) {
+  const query = (await searchParams).query;
+
+  const usuarios = await prisma.user.findMany({
+    where: {
+      name: { contains: query, mode: 'insensitive' },
+    },
+    orderBy: { id: 'desc' },
+  });
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-10 px-4">
+      <div className="max-w-4xl mx-auto">
+        
+        {/* Encabezado */}
+        <header className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Dashboard de Usuarios</h1>
+          <p className="text-gray-600">Gestiona la base de datos de PostgreSQL en tiempo real.</p>
+        </header>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          {/* Columna Izquierda: Formulario */}
+          <section className="md:col-span-1">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+              <h2 className="text-lg font-semibold mb-4 text-gray-800">Nuevo Usuario</h2>
+              <form action={addUser} className="flex flex-col gap-4">
+                <input 
+                  name="name" 
+                  placeholder="Nombre completo" 
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none" 
+                  required 
+                />
+                <input 
+                  name="email" 
+                  type="email" 
+                  placeholder="Correo electrónico" 
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none" 
+                  required 
+                />
+
+                <button 
+                  type="submit" 
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-md transition-colors"
+                >
+                  Guardar en DB
+                </button>
+              </form>
+            </div>
+          </section>
+
+          {/* Columna Derecha: Lista y Búsqueda */}
+          <section className="md:col-span-2">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                <h2 className="text-lg font-semibold text-gray-800">Registros Existentes</h2>
+                <div className="w-full sm:w-64">
+                  <Search />
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {usuarios.length === 0 ? (
+                  <div className="text-center py-10 text-gray-500">
+                    <p>No se encontraron resultados.</p>
+                  </div>
+                ) : (
+                  usuarios.map((user) => (
+                    <div 
+                      key={user.id} 
+                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors border border-gray-200"
+                    >
+                      <div>
+                        <h3 className="font-bold text-gray-900">{user.name}</h3>
+                        <p className="text-sm text-gray-600">{user.email} • {user.role ?? 'N/A'}</p>
+                      </div>
+                      <DeleteButton id={user.id} />
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </section>
+
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </div>
     </div>
   );
 }
