@@ -1,4 +1,30 @@
-import type { Metadata } from "next";
+import './globals.css'
+import Sidebar from './components/Sidebar'
+import Header from './components/Header'
+import { Providers } from './providers'
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="es">
+      <body className="bg-gray-50 flex h-screen overflow-hidden">
+        <Providers>
+        <Sidebar />
+        
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+          {/* Añadimos pl-14 en móvil para dejar espacio al botón del menú si es necesario */}
+          <Header />
+          <main className="flex-1 overflow-y-auto p-4 md:p-8">
+            <div className="max-w-7xl mx-auto">
+              {children}
+            </div>
+          </main>
+        </div>
+        </Providers>
+      </body>
+    </html>
+  )
+}
+/*import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -32,3 +58,4 @@ export default function RootLayout({
     </html>
   );
 }
+*/

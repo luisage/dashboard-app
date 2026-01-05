@@ -20,6 +20,12 @@ model User {
   name  String?
   role      Role     @default(USER)
   createdAt DateTime @default(now())
+  age Int @default(18)
+  password String
+  usuario String
+  nombre String
+  apellidoPaterno String
+  apellidoMaterno String
 }
 
 enum Role {
