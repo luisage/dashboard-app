@@ -1,8 +1,15 @@
 import { prisma } from '@/lib/prisma';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import ChartWrapper from '../components/ChartWrapper'; // Necesario para evitar errores de renderizado
+import ChartWrapper from '../../components/ChartWrapper'; // Necesario para evitar errores de renderizado
+import { getServerSession } from "next-auth"
+import { redirect } from "next/navigation"
 
 export default async function ReportesPage() {
+  const session = await getServerSession()
+  
+  if ((session?.user as any)?.role !== 'ADMIN') {
+    redirect('/') // Si no es admin, lo mandamos al inicio
+  }
   // Obtener usuarios con edad de la DB
   const usuarios = await prisma.user.findMany({
     where: { age: { not: 0 } },

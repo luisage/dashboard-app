@@ -1,30 +1,7 @@
-/*import { prisma } from '@/lib/prisma';
-
-export default async function Home() {
-  // 1. Consultamos los usuarios directamente desde PostgreSQL
-  const usuarios = await prisma.user.findMany();
-
-  return (
-    <main style={{ padding: '40px', fontFamily: 'sans-serif' }}>
-      <h1 className="text-3xl font-bold text-blue-600">Dashboard de Usuarios</h1>
-      
-      {usuarios.length === 0 ? (
-        <p>No hay usuarios en la base de datos.</p>
-      ) : (
-        <ul>
-          {usuarios.map((user) => (
-            <li key={user.id}>{user.name} - {user.email}  - {user.role}</li>
-          ))}
-        </ul>
-      )}
-    </main>
-  );
-}*/
-
 import { prisma } from '@/lib/prisma';
-import { addUser } from './actions';
-import DeleteButton from './components/DeleteButton';
-import Search from './components/Search';
+import { addUser } from '../../actions';
+import DeleteButton from '../../components/DeleteButton';
+import Search from '../../components/Search';
 
 export default async function Home({
   searchParams,

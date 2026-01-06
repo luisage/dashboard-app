@@ -22,13 +22,22 @@ model User {
   createdAt DateTime @default(now())
   age Int @default(18)
   password String
-  usuario String
-  nombre String
-  apellidoPaterno String
-  apellidoMaterno String
+  usuario String?
+  nombre String?
+  apellidoPaterno String?
+  apellidoMaterno String?
+  comments Comment[]
 }
 
 enum Role {
   ADMIN
   USER
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  text      String
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
 }

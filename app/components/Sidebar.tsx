@@ -4,12 +4,13 @@ import { LogOut, User as UserIcon } from 'lucide-react'
 import { useState } from 'react'
 import Link from 'next/link' // Importamos Link
 import { usePathname } from 'next/navigation' // Para saber en qué página estamos
-import { Menu, X, Users, Settings, BarChart3 } from 'lucide-react'
+import { Menu, X, Users, Settings, BarChart3, Home, BanknoteArrowDown, ClipboardClock } from 'lucide-react'
 
 export default function Sidebar() {
   const { data: session } = useSession()
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname() // Obtenemos la ruta actual
+  const userRole = (session?.user as any)?.role
 
   const toggleSidebar = () => setIsOpen(!isOpen)
 
@@ -46,9 +47,53 @@ export default function Sidebar() {
           {/* Navegación a Usuarios (Home) */}
           <Link href="/" onClick={() => setIsOpen(false)}>
             <NavItem 
+              icon={<Home size={18} />} 
+              label="Home" 
+              active={pathname === '/'} 
+            />
+          </Link>
+
+          {userRole === 'ADMIN' && (
+          <Link href="/usuarios" onClick={() => setIsOpen(false)}>
+            <NavItem 
               icon={<Users size={18} />} 
               label="Usuarios" 
-              active={pathname === '/'} 
+              active={pathname === '/usuarios'} 
+            />
+          </Link>
+          )}
+
+          {userRole === 'ADMIN' && (
+          <Link href="/reportes" onClick={() => setIsOpen(false)}>
+            <NavItem 
+                icon={<BarChart3 size={18} />} 
+                label="Reportes" 
+                active={pathname === '/reportes'} 
+            />
+          </Link>
+          )}
+
+          <Link href="/historial" onClick={() => setIsOpen(false)}>
+            <NavItem 
+              icon={<ClipboardClock size={18} />} 
+              label="Historial de apuestas" 
+              active={pathname === '/historial'} 
+            />
+          </Link>
+
+          <Link href="/depositos" onClick={() => setIsOpen(false)}>
+            <NavItem 
+                icon={<BanknoteArrowDown size={18} />} 
+                label="Depósitos y cobros" 
+                active={pathname === '/depositos'} 
+            />
+          </Link>
+
+          <Link href="/afiliacion" onClick={() => setIsOpen(false)}>
+            <NavItem 
+              icon={<ClipboardClock size={18} />} 
+              label="Afiliación a agentes" 
+              active={pathname === '/afiliacion'} 
             />
           </Link>
 
@@ -58,14 +103,6 @@ export default function Sidebar() {
               icon={<Settings size={18} />} 
               label="Configuración" 
               active={pathname === '/configuracion'} 
-            />
-          </Link>
-
-          <Link href="/reportes" onClick={() => setIsOpen(false)}>
-            <NavItem 
-                icon={<BarChart3 size={18} />} 
-                label="Reportes" 
-                active={pathname === '/reportes'} 
             />
           </Link>
         </nav>
