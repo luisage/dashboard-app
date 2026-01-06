@@ -8,14 +8,14 @@ export async function addUser(formData: FormData) {
   //const role = formData.get('role') as string
 
   // Guardar en PostgreSQL
-  await prisma.user.create({
+  /*await prisma.user.create({
     data: {
       name,
       email,
-      
+
   //    age: age ? parseInt(age) : null,
     },
-  })
+  })*/
 
   // Refrescar la página para ver el nuevo usuario
   revalidatePath('/')
